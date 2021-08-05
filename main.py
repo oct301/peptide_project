@@ -100,7 +100,7 @@ loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
 #     positional_encoding_input = 1000,
 #     positional_encoding_target = 50,
 #     dropout_rate=DROPOUT_RATE)
-encoder = en(
+encoder1 = en(
     num_layers=NUM_LAYERS,
     d_model=D_MODEL,
     num_heads=NUM_HEADS,
@@ -108,6 +108,16 @@ encoder = en(
     input_vocab_size=500000,
     positional_encoding_input = 1000,
     dropout_rate=DROPOUT_RATE)
+
+encoder2 = en(
+    num_layers=NUM_LAYERS,
+    d_model=D_MODEL,
+    num_heads=NUM_HEADS,
+    dff=DFF,
+    input_vocab_size=500000,
+    positional_encoding_input = 1000,
+    dropout_rate=DROPOUT_RATE)
+
 decoder = de(
     num_layers=NUM_LAYERS,
     d_model=D_MODEL,
@@ -143,14 +153,7 @@ def train_step(input, target):
     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(input, target_input)
 
     with tf.GradientTape() as tape:
-        enc1_output = encoder(input, True, enc_padding_mask)
-
-        '''
-        전처리하기
-        
-        '''
-
-        #enc2_output = encoder2(enc1_output, True, enc_padding_mask)
+        enc1_output = encoder1(input, True, enc_padding_mask)
 
         predictions, _ = decoder(target_input,
                                    enc1_output,
@@ -161,12 +164,42 @@ def train_step(input, target):
         loss = loss_function(target_real, predictions)
 
 
-    gradients = tape.gradient(loss, encoder.trainable_variables+decoder.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, encoder.trainable_variables+decoder.trainable_variables))
+    gradients = tape.gradient(loss, encoder1.trainable_variables+decoder.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, encoder1.trainable_variables+decoder.trainable_variables))
 
     train_loss(loss)
     train_accuracy(accuracy_function(target_real, predictions))
 
+
+def train_step_transfer_learn(input, target):
+    target_input = target[:, :-1]
+    target_real = target[:, 1:]
+    enc_padding_mask, combined_mask, dec_padding_mask = create_masks(input, target_input)
+
+    with tf.GradientTape() as tape:
+        enc1_output = encoder1(input, True, enc_padding_mask)
+
+        '''
+        전처리하기
+        dense로 intensity 적용 ?
+
+        '''
+
+        enc2_output = encoder2(enc1_output, True, enc_padding_mask)
+
+        predictions, _ = decoder(target_input,
+                                 enc2_output,
+                                 True,
+                                 combined_mask,
+                                 dec_padding_mask)
+
+        loss = loss_function(target_real, predictions)
+
+    gradients = tape.gradient(loss, encoder2.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, encoder2.trainable_variables))
+
+    train_loss(loss)
+    train_accuracy(accuracy_function(target_real, predictions))
 
 # def evaluate_aminoacid_level(dataset):
 #     batch_size = 200
