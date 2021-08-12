@@ -174,7 +174,7 @@ while True:
 
     print('\r',f'Epoch {epoch + 1} : Time {time.time() - start:.2f}s')
     print(f'\tTrain | Loss {train_loss.result():.3f}, Accuracy {train_accuracy.result():.3f}')
-    valid_loss, valid_accuracy = evaluate_aminoacid_level(valid_dataset)
+    valid_loss, valid_accuracy = evaluate_aminoacid_level(theoretical_valid_dataset)
     print(f'\tValid | Loss {valid_loss:.3f}, Accuracy {valid_accuracy:.3f}')
 
     epoch+=1
