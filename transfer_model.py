@@ -16,11 +16,17 @@ class Encoder2(tf.keras.layers.Layer):
 
     self.dropout = tf.keras.layers.Dropout(dropout_rate)
 
-  def call(self, x, intensity, training, mask):
+  def call(self, x, intensity, BATCH_SIZE, D_MODEL, training, mask):
 
     # adding embedding and position encoding.
-    intensity = self.embedding(intensity)  # (batch_size, intensity_seq_len, d_model)
-    x += intensity
+    # intensity = self.embedding(intensity)  # (batch_size, intensity_seq_len, d_model)
+    # x += intensity
+
+    intensity = tf.reshape(intensity, [BATCH_SIZE, len(x[1]), 1])
+    # intensity = tf.repeat(intensity, repeats=D_MODEL, axis=2)
+    intensity = tf.cast(intensity, tf.float32)
+    x = tf.concat([x, intensity], axis=2)
+    x = tf.keras.layers.Dense(D_MODEL)(x)
 
     x = self.dropout(x, training=training)
 
@@ -31,27 +37,27 @@ class Encoder2(tf.keras.layers.Layer):
 
 
 class ModifiedTransformer(tf.keras.Model):
-  def __init__(self, num_layers, d_model, num_heads, dff,
+    def __init__(self, num_layers, d_model, num_heads, dff,
                intensity_vocab_size, target_vocab_size,
                positional_encoding_target, dropout_rate=0.1):
-      super(ModifiedTransformer, self).__init__()
+        super(ModifiedTransformer, self).__init__()
 
-      self.encoder = Encoder2(num_layers, d_model, num_heads, dff,
+        self.encoder = Encoder2(num_layers, d_model, num_heads, dff,
                               intensity_vocab_size, dropout_rate)
 
-      self.decoder = Decoder(num_layers, d_model, num_heads, dff,
+        self.decoder = Decoder(num_layers, d_model, num_heads, dff,
                              target_vocab_size, positional_encoding_target, dropout_rate)
 
-      self.final_layer = tf.keras.layers.Dense(target_vocab_size)
+        self.final_layer = tf.keras.layers.Dense(target_vocab_size)
 
-  def call(self, input, intensity, target, training, enc_padding_mask,
+    def call(self, input, intensity, BATCH_SIZE, D_MODEL, target, training, enc_padding_mask,
            look_ahead_mask, dec_padding_mask):
-      enc_output = self.encoder(input, intensity, training, enc_padding_mask)  # (batch_size, input_seq_len, d_model)
+        enc_output = self.encoder(input, intensity, BATCH_SIZE, D_MODEL, training, enc_padding_mask)  # (batch_size, input_seq_len, d_model)
 
-      # dec_output.shape == (batch_size, tar_seq_len, d_model)
-      dec_output, attention_weights = self.decoder(
+        # dec_output.shape == (batch_size, tar_seq_len, d_model)
+        dec_output, attention_weights = self.decoder(
           target, enc_output, training, look_ahead_mask, dec_padding_mask)
 
-      final_output = self.final_layer(dec_output)  # (batch_size, tar_seq_len, target_vocab_size)
+        final_output = self.final_layer(dec_output)  # (batch_size, tar_seq_len, target_vocab_size)
 
-      return final_output, attention_weights
+        return final_output, attention_weights

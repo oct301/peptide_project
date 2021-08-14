@@ -262,14 +262,9 @@ for inp, intensity, tar in real_train_batches:
     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, target_input)
 
     enc1_output = encoder1(inp, False, enc_padding_mask)
-    print(enc1_output.shape, "enc1_output")
     intensity = tf.reshape(intensity, [BATCH_SIZE, len(enc1_output[1]), 1])
     #intensity = tf.repeat(intensity, repeats=D_MODEL, axis=2)
     intensity = tf.cast(intensity, tf.float32)
-    print(intensity.shape, "intensity")
-
     enc1_output1 = tf.concat([enc1_output, intensity], axis=2)
-    print(enc1_output1,"enc1_output1")
-
     enc1_output1 = tf.keras.layers.Dense(D_MODEL)(enc1_output1)
     break
