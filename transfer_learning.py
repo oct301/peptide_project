@@ -158,6 +158,8 @@ if ckpt_manager_finetuning.latest_checkpoint:
     ckpt_finetuning.restore(ckpt_manager_finetuning.latest_checkpoint)
     print('Latest checkpoint restored!!')
 
+
+tf.config.experimental_run_functions_eagerly(True) ## 뭔지는 모르겟는데 써야 돌아감 @.@
 train_step_signature_finetuning = [
   tf.TensorSpec(shape=(None, None), dtype=tf.int64),
   tf.TensorSpec(shape=(None, None), dtype=tf.int64),
@@ -172,23 +174,20 @@ def train_step_finetuning(input, intensity, target):
     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(input, target_input)
 
     with tf.GradientTape() as tape:
-        #final_layer = tf.Keras.layers.Dense(30)
+        #final_layer = tf.keras.layers.Dense(30)
         encoder1_output = pretrained_transformer.encoder(input, False, enc_padding_mask)
-        encoder2_output = modified_transformer.encoder(encoder1_output, intensity, BATCH_SIZE, D_MODEL, True, enc_padding_mask)
+        decoder1_output, _ = pretrained_transformer.decoder(target_input, encoder1_output, False, combined_mask,
+                                                            dec_padding_mask)
+        predictions, _ = modified_transformer(encoder1_output, decoder1_output, intensity, BATCH_SIZE, D_MODEL, True, enc_padding_mask, combined_mask, dec_padding_mask)
 
-        decoder1_output, _ = pretrained_transformer.decoder(target_input, encoder1_output, False, combined_mask, dec_padding_mask)
-        decoder1_output_layer = tf.Keras.layers.Dense(30)(decoder1_output)
-        decoder2_output, _ = modified_transformer.decoder(target_input, encoder2_output, True, combined_mask, dec_padding_mask)
-        decoder2_output_layer = tf.Keras.layers.Dense(30)(decoder1_output_layer)
-
-        loss = loss_function(target_real, decoder2_output_layer)
+        loss = loss_function(target_real, predictions)
 
 
     gradients = tape.gradient(loss, modified_transformer.trainable_variables)
     optimizer.apply_gradients(zip(gradients, modified_transformer.trainable_variables))
 
     train_loss(loss)
-    train_accuracy(accuracy_function(target_real, decoder2_output_layer))
+    train_accuracy(accuracy_function(target_real, predictions))
 
 
 epoch = 0

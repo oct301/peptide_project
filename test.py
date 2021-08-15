@@ -2,6 +2,7 @@ import tensorflow as tf
 import time
 
 from model import *
+from transfer_model import *
 
 feature_description1 = {
     'sequence': tf.io.VarLenFeature(tf.int64),
@@ -123,41 +124,25 @@ optimizer = tf.keras.optimizers.Adam(learning_rate,
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
     from_logits=True, reduction='none')
 
-# transformer = Transformer(
-#     num_layers=NUM_LAYERS,
-#     d_model=D_MODEL,
-#     num_heads=NUM_HEADS,
-#     dff=DFF,
-#     input_vocab_size=500000,
-#     target_vocab_size=30,
-#     positional_encoding_input = 1000,
-#     positional_encoding_target = 50,
-#     dropout_rate=DROPOUT_RATE)
-encoder1 = en(
+transformer = Transformer(
     num_layers=NUM_LAYERS,
     d_model=D_MODEL,
     num_heads=NUM_HEADS,
     dff=DFF,
     input_vocab_size=500000,
-    positional_encoding_input=1000,
-    dropout_rate=DROPOUT_RATE)
-
-encoder2 = en(
-    num_layers=NUM_LAYERS,
-    d_model=D_MODEL,
-    num_heads=NUM_HEADS,
-    dff=DFF,
-    input_vocab_size=500000,
-    positional_encoding_input=1000,
-    dropout_rate=DROPOUT_RATE)
-
-decoder = de(
-    num_layers=NUM_LAYERS,
-    d_model=D_MODEL,
-    num_heads=NUM_HEADS,
-    dff=DFF,
     target_vocab_size=30,
-    positional_encoding_target=50,
+    positional_encoding_input = 1000,
+    positional_encoding_target = 50,
+    dropout_rate=DROPOUT_RATE)
+
+modified_transformer = ModifiedTransformer(
+    num_layers=NUM_LAYERS,
+    d_model=D_MODEL,
+    num_heads=NUM_HEADS,
+    dff=DFF,
+    intensity_vocab_size=12000,
+    target_vocab_size=30,
+    positional_encoding_target = 50,
     dropout_rate=DROPOUT_RATE)
 
 train_step_signature = [
@@ -173,18 +158,16 @@ def train_step(input, target):
     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(input, target_input)
 
     with tf.GradientTape() as tape:
-        enc1_output = encoder1(input, True, enc_padding_mask)
-
-        predictions, _ = decoder(target_input,
-                                 enc1_output,
-                                 True,
-                                 combined_mask,
-                                 dec_padding_mask)
+        predictions, _ = transformer(input, target_input,
+                                     True,
+                                     enc_padding_mask,
+                                     combined_mask,
+                                     dec_padding_mask)
 
         loss = loss_function(target_real, predictions)
 
-    gradients = tape.gradient(loss, encoder1.trainable_variables + decoder.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, encoder1.trainable_variables + decoder.trainable_variables))
+    gradients = tape.gradient(loss, transformer.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, transformer.trainable_variables))
 
     train_loss(loss)
     train_accuracy(accuracy_function(target_real, predictions))
@@ -197,37 +180,37 @@ train_step_signature_transfer = [
 ]
 
 
-@tf.function(input_signature=train_step_signature_transfer)
-def train_step_transfer_learn(input, intensity, target):
-    target_input = target[:, :-1]
-    target_real = target[:, 1:]
-    enc_padding_mask, combined_mask, dec_padding_mask = create_masks(input, target_input)
-
-    with tf.GradientTape() as tape:
-        enc1_output = encoder1(input, False, enc_padding_mask)
-
-        '''
-        전처리하기
-        dense로 intensity 적용 ?
-
-        '''
-        tf.reshape(intensity, [BATCH_SIZE, len(enc1_output[1]), 1])
-        enc1_output = tf.concat([enc1_output, intensity], axis=3)
-        enc2_output = encoder2(enc1_output, intensity, True, enc_padding_mask)
-
-        predictions, _ = decoder(target_input,
-                                 enc2_output,
-                                 False,
-                                 combined_mask,
-                                 dec_padding_mask)
-
-        loss = loss_function(target_real, predictions)
-
-    gradients = tape.gradient(loss, encoder2.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, encoder2.trainable_variables))
-
-    train_loss(loss)
-    train_accuracy(accuracy_function(target_real, predictions))
+# @tf.function(input_signature=train_step_signature_transfer)
+# def train_step_transfer_learn(input, intensity, target):
+#     target_input = target[:, :-1]
+#     target_real = target[:, 1:]
+#     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(input, target_input)
+#
+#     with tf.GradientTape() as tape:
+#         enc1_output = encoder1(input, False, enc_padding_mask)
+#
+#         '''
+#         전처리하기
+#         dense로 intensity 적용 ?
+#
+#         '''
+#         tf.reshape(intensity, [BATCH_SIZE, len(enc1_output[1]), 1])
+#         enc1_output = tf.concat([enc1_output, intensity], axis=3)
+#         enc2_output = encoder2(enc1_output, intensity, True, enc_padding_mask)
+#
+#         predictions, _ = decoder(target_input,
+#                                  enc2_output,
+#                                  False,
+#                                  combined_mask,
+#                                  dec_padding_mask)
+#
+#         loss = loss_function(target_real, predictions)
+#
+#     gradients = tape.gradient(loss, encoder2.trainable_variables)
+#     optimizer.apply_gradients(zip(gradients, encoder2.trainable_variables))
+#
+#     train_loss(loss)
+#     train_accuracy(accuracy_function(target_real, predictions))
 
 
 # def evaluate_aminoacid_level(dataset):
@@ -261,10 +244,22 @@ for inp, intensity, tar in real_train_batches:
     target_real = tar[:, 1:]
     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, target_input)
 
-    enc1_output = encoder1(inp, False, enc_padding_mask)
-    intensity = tf.reshape(intensity, [BATCH_SIZE, len(enc1_output[1]), 1])
-    #intensity = tf.repeat(intensity, repeats=D_MODEL, axis=2)
-    intensity = tf.cast(intensity, tf.float32)
-    enc1_output1 = tf.concat([enc1_output, intensity], axis=2)
-    enc1_output1 = tf.keras.layers.Dense(D_MODEL)(enc1_output1)
+    encoder1_output = transformer.encoder(inp, False, enc_padding_mask)
+    decoder1_output, _ = transformer.decoder(target_input, encoder1_output, False, combined_mask,
+                                                        dec_padding_mask)
+    print(encoder1_output.shape)
+    print(decoder1_output.shape)
+    predict, _ = modified_transformer(encoder1_output, decoder1_output, intensity, BATCH_SIZE, D_MODEL, True,
+                                      enc_padding_mask, combined_mask, dec_padding_mask)
+    print(predict.shape)
+    # enc1_output = transformer.encoder(inp, False, enc_padding_mask)
+    # print(enc1_output.shape)
+    # intensity = tf.reshape(intensity, [BATCH_SIZE, len(enc1_output[1]), 1])
+    # print(intensity.shape)
+    # #intensity = tf.repeat(intensity, repeats=D_MODEL, axis=2)
+    # intensity = tf.cast(intensity, tf.float32)
+    # enc1_output1 = tf.concat([enc1_output, intensity], axis=2)
+    # print(enc1_output1.shape)
+    # enc1_output1 = tf.keras.layers.Dense(D_MODEL)(enc1_output1)
+    # print(enc1_output1.shape)
     break
