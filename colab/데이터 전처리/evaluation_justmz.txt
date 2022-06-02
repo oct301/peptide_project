@@ -1,0 +1,60 @@
+ Epoch 1 : Time 5344.23s
+	Train | Loss 1.492, Accuracy 0.531
+	Valid | Loss 1.237, Accuracy 0.619
+Saving checkpoint for epoch 1 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-1
+ Epoch 2 : Time 5328.49s
+	Train | Loss 1.209, Accuracy 0.617
+	Valid | Loss 1.193, Accuracy 0.640
+Saving checkpoint for epoch 2 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-2
+ Epoch 3 : Time 5342.00s
+	Train | Loss 1.139, Accuracy 0.638
+	Valid | Loss 1.159, Accuracy 0.651
+Saving checkpoint for epoch 3 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-3
+ Epoch 4 : Time 5348.95s
+	Train | Loss 1.094, Accuracy 0.652
+	Valid | Loss 1.166, Accuracy 0.653
+Saving checkpoint for epoch 4 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-4
+ Epoch 5 : Time 5332.16s
+	Train | Loss 1.060, Accuracy 0.663
+	Valid | Loss 1.185, Accuracy 0.656
+Saving checkpoint for epoch 5 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-5
+ Epoch 6 : Time 5323.69s
+	Train | Loss 1.034, Accuracy 0.671
+	Valid | Loss 1.175, Accuracy 0.661
+Saving checkpoint for epoch 6 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-6
+ Epoch 7 : Time 5324.47s
+	Train | Loss 1.012, Accuracy 0.678
+	Valid | Loss 1.213, Accuracy 0.662
+Saving checkpoint for epoch 7 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-7
+ Epoch 8 : Time 5332.64s
+	Train | Loss 0.994, Accuracy 0.684
+	Valid | Loss 1.198, Accuracy 0.660
+Saving checkpoint for epoch 8 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-8
+ Epoch 9 : Time 5324.61s
+	Train | Loss 0.978, Accuracy 0.689
+	Valid | Loss 1.223, Accuracy 0.662
+Saving checkpoint for epoch 9 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-9
+ Epoch 10 : Time 5325.58s
+	Train | Loss 0.964, Accuracy 0.693
+	Valid | Loss 1.222, Accuracy 0.660
+Saving checkpoint for epoch 10 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-10
+ Epoch 11 : Time 5327.43s
+	Train | Loss 0.952, Accuracy 0.697
+	Valid | Loss 1.236, Accuracy 0.661
+Saving checkpoint for epoch 11 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-11
+ Epoch 12 : Time 5343.38s
+	Train | Loss 0.941, Accuracy 0.701
+	Valid | Loss 1.249, Accuracy 0.663
+Saving checkpoint for epoch 12 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-12
+ Epoch 13 : Time 5345.53s
+	Train | Loss 0.931, Accuracy 0.704
+	Valid | Loss 1.263, Accuracy 0.664
+Saving checkpoint for epoch 13 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-13
+ Epoch 14 : Time 5341.81s
+	Train | Loss 0.922, Accuracy 0.707
+	Valid | Loss 1.302, Accuracy 0.662
+Saving checkpoint for epoch 14 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-14
+ Epoch 15 : Time 5333.29s
+	Train | Loss 0.913, Accuracy 0.709
+	Valid | Loss 1.313, Accuracy 0.662
+Saving checkpoint for epoch 15 at /content/drive/MyDrive/translateMS/checkpoints/justmz/ckpt-15

@@ -1,0 +1,60 @@
+ Epoch 1 : Time 11854.26s
+	Train | Loss 1.910, Accuracy 0.418
+	Valid | Loss 1.532, Accuracy 0.548
+Saving checkpoint for epoch 1 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-1
+ Epoch 2 : Time 11864.57s
+	Train | Loss 1.576, Accuracy 0.515
+	Valid | Loss 1.398, Accuracy 0.580
+Saving checkpoint for epoch 2 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-2
+ Epoch 3 : Time 11875.01s
+	Train | Loss 1.516, Accuracy 0.534
+	Valid | Loss 1.325, Accuracy 0.601
+Saving checkpoint for epoch 3 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-3
+ Epoch 4 : Time 11860.26s
+	Train | Loss 1.478, Accuracy 0.546
+	Valid | Loss 1.279, Accuracy 0.615
+Saving checkpoint for epoch 4 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-4
+ Epoch 5 : Time 11867.08s
+	Train | Loss 1.450, Accuracy 0.555
+	Valid | Loss 1.277, Accuracy 0.618
+Saving checkpoint for epoch 5 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-5
+ Epoch 6 : Time 11867.80s
+	Train | Loss 1.427, Accuracy 0.562
+	Valid | Loss 1.301, Accuracy 0.619
+Saving checkpoint for epoch 6 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-6
+  Epoch 1 : Time 7642.94s
+	Train | Loss 1.409, Accuracy 0.568
+	Valid | Loss 1.334, Accuracy 0.613
+Saving checkpoint for epoch 1 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-7
+ Epoch 2 : Time 7627.85s
+	Train | Loss 1.394, Accuracy 0.573
+	Valid | Loss 1.375, Accuracy 0.608
+Saving checkpoint for epoch 2 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-8
+ Epoch 3 : Time 7619.00s
+	Train | Loss 1.381, Accuracy 0.578
+	Valid | Loss 1.405, Accuracy 0.606
+Saving checkpoint for epoch 3 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-9
+ Epoch 4 : Time 7617.24s
+	Train | Loss 1.369, Accuracy 0.581
+	Valid | Loss 1.473, Accuracy 0.595
+Saving checkpoint for epoch 4 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-10
+ Epoch 5 : Time 7616.66s
+	Train | Loss 1.360, Accuracy 0.585
+	Valid | Loss 1.527, Accuracy 0.588
+Saving checkpoint for epoch 5 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-11
+ Epoch 6 : Time 7614.13s
+	Train | Loss 1.351, Accuracy 0.588
+	Valid | Loss 1.566, Accuracy 0.586
+Saving checkpoint for epoch 6 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-12
+ Epoch 7 : Time 7619.38s
+	Train | Loss 1.342, Accuracy 0.591
+	Valid | Loss 1.621, Accuracy 0.580
+Saving checkpoint for epoch 7 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-13
+ Epoch 8 : Time 7608.90s
+	Train | Loss 1.335, Accuracy 0.593
+	Valid | Loss 1.589, Accuracy 0.589
+Saving checkpoint for epoch 8 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-14
+ Epoch 9 : Time 7607.37s
+	Train | Loss 1.327, Accuracy 0.596
+	Valid | Loss 1.683, Accuracy 0.577
+Saving checkpoint for epoch 9 at /content/drive/MyDrive/translateMS/checkpoints/pretraining/ckpt-15
